@@ -13,7 +13,7 @@ const Sidebar = ({ user }: SiderbarProps) => {
     <section className='sidebar'>
       <nav className="flex flex-col gap-4">
         <Link href="/"
-          className="mb-12 cursor-pointer items-center gap-2">
+          className="mb-12 cursor-pointer flex items-center gap-2">
             <Image 
               src="/icons/logo.svg"
               width={34}
@@ -33,13 +33,21 @@ const Sidebar = ({ user }: SiderbarProps) => {
             className={cn('sidebar-link', { 'bg-bank-gradient': isActive })}
             >
               <div className="relative size-6">
-                <Image src={link.imgURL} alt={link.label} fill className={cn( {'brightness-[3] invert-0' : isActive })} />
+                <Image 
+                  src={link.imgURL} 
+                  alt={link.label} 
+                  fill 
+                  className={cn( {'brightness-[3] invert-0' : isActive })} 
+                />
               </div>
               <p className= {cn('sidebar-label', { 'text-white!' : isActive })}>{link.label}</p>
             </Link>
           )
         })}
+
+        USER
       </nav>
+      FOOTER
     </section>
   )
 }
