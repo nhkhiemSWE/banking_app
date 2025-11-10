@@ -28,7 +28,7 @@ const Sidebar = ({ user: _user }: SiderbarProps) => {
           const isActive = pathname === link.route || pathname.startsWith(`${link.route}/`)
           return (  
             <Link key={link.label} href={link.route}
-            className={cn('sidebar-link', { 'bg-bank-gradient': isActive })}
+            className={cn('sidebar-link cursor-pointer', { 'bg-bank-gradient': isActive })}
             >
               <div className="relative size-6">
                 <Image 

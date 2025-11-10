@@ -2,9 +2,10 @@ import React from 'react'
 import HeaderBox from '@/components/HeaderBox'
 import TotalBalanceBox from '@/components/TotalBalanceBox'
 import DoughnutChart from '@/components/DoughnutChart';
+import RightSideBar from '@/components/RightSideBar';
 
 const Home = () => {
-  const loggedInUser = {firstName: 'John', lastName: 'Doe'};
+  const loggedInUser = {firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com'};
   return (
     <section className='home'>
       <div className='home-content'>
@@ -22,7 +23,14 @@ const Home = () => {
             totalCurrentBalance={1200}
           />
         </header>
+        RECENT TRANSACTIONS
+
       </div>
+      <RightSideBar 
+        user={loggedInUser}
+        transactions={[]}
+        banks={[{currentBalance: 1000, name: 'Bank of America'}, {currentBalance: 2000, name: 'Chase'}]}
+      />
     </section>
   )
 }

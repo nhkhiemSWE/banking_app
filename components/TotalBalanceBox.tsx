@@ -1,10 +1,9 @@
-import React from 'react'
 import AnimatedCountUp from './AnimatedCountUp'
 import DoughnutChart from './DoughnutChart'
 
 const TotalBalanceBox = ({ accounts, totalBanks, totalCurrentBalance }: TotlaBalanceBoxProps) => {
   return (
-    <section className='total-balance'>
+    <section className='total-balance overflow-visible'>
       <div className='total-balance-chart'>
         <DoughnutChart accounts={accounts} />
       </div>

@@ -37,14 +37,14 @@
 
   --color-blue-25: oklch(98.0% 0.03 256);
   --color-blue-100: oklch(91.3% 0.14 256);
-  --color-blue-500: oklch(59.4% 0.61 279);
+  --color-blue-500: oklch(0.6518 0.1809 253.92);
   --color-blue-600: oklch(49.5% 0.74 288);
   --color-blue-700: oklch(42.1% 0.71 291);
   --color-blue-900: oklch(28.6% 0.44 287);
 
   --color-sky-1: oklch(97.6% 0.04 256);
 
-  --color-black-1: oklch(13.5% 0.33 287);
+  --color-black-1: oklch(0.2577 0.0931 257.43);
   --color-black-2: oklch(26.8% 0.14 273);
 
   --color-gray-25: oklch(99.0% 0.01 290);
@@ -303,7 +303,7 @@
 }
 
 @utility bank-card_icon {
-  @apply flex size-full flex-1 flex-col items-end justify-between rounded-r-[20px] bg-bank-gradient bg-cover bg-center bg-no-repeat py-5 pr-5;
+  @apply flex h-full w-[100px] shrink-0 flex-col items-end justify-between rounded-r-[20px] bg-bank-gradient bg-cover bg-center bg-no-repeat py-5 px-0;
 }
 
 @utility bank-info {
