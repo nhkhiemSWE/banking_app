@@ -2,20 +2,11 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
-import { z } from "zod"
+import type { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { Form } from "@/components/ui/form"
 import { AuthFormSchema } from '@/lib/utils'
 import CustomInput from './CustomInput'
 import { Loader2 } from 'lucide-react'
@@ -79,36 +70,49 @@ const AuthForm = ({type}: {type:string}) => {
           {/*PlaidLink*/}
         </div>
         ) : (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-            <CustomInput
-              control={form.control}
-              name="email"
-              label="Email"
-              placeholder="Enter your email"
-            />
+        <>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+              <CustomInput
+                control={form.control}
+                name="email"
+                label="Email"
+                placeholder="Enter your email"
+              />
 
-            <CustomInput
-              control={form.control}
-              name="password"
-              label="Password"
-              placeholder="Enter your password"
-            />
-            <Button className="form-btn cursor-pointer" type="submit" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 size={20} className="animate-spin" /> &nbsp; Loading...
-                </>
-              ) : (
-                type === 'sign-in' ? 'Sign In' : 'Sign Up'
-              )}
-            </Button>
-          </form>
-        </Form>
-        )
-      }
+              <CustomInput
+                control={form.control}
+                name="password"
+                label="Password"
+                placeholder="Enter your password"
+              />
+              <div className="flex flex-col gap-4">
+                <Button className="form-btn cursor-pointer" type="submit" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 size={20} className="animate-spin" /> &nbsp; Loading...
+                    </>
+                  ) : (
+                    type === 'sign-in' ? 'Sign In' : 'Sign Up'
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+          <footer className="flex justify-center gap-1">
+            <p className="text-14 font-normal text-gray-600">
+              {type === 'sign-in' 
+              ? 'Don\'t have an account?'
+              : 'Already have an account?'} 
+            </p>
+            <Link
+              href={type === 'sign-in' ? '/sign-up' : '/sign-in'} className="form-link">
+              {type === 'sign-in' ? 'Sign Up' : 'Sign In'}
+            </Link>
+          </footer>
+        </>
+      )}
     </section>
   )
 }
-
 export default AuthForm
