@@ -8,31 +8,113 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { AuthFormSchema } from '@/lib/utils'
+import { validateUSPSAddress } from '@/lib/actions/address.actions'
 import CustomInput from './CustomInput'
 import { Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { signUp, signIn } from '@/lib/actions/user.actions'
 
 const AuthForm = ({type}: {type:string}) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const schema = AuthFormSchema({type: type});
+  const router = useRouter();
   // 1. Define your form.
-  const form = useForm<z.infer<typeof AuthFormSchema>>({
-    resolver: zodResolver(AuthFormSchema),
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: {
       email: "",
       password: "",
+      firstName: "",
+      lastName: "",
+      address: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      dateOfBirth: "",
+      ssn: "",
     },
   })
  
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof AuthFormSchema>) {
+  const onSubmit = async (data: z.infer<typeof schema>) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     setIsLoading(true);
-    //time delay of 2 seconds
-    setTimeout(() => {
-      console.log(values)
+    try {
+      console.log('Form data:', data);
+
+      // Validate address if signing up
+      if (type === 'sign-up' && data.address && data.city && data.state) {
+        console.log('Validating address with USPS...');
+        const addressResult = await validateUSPSAddress(
+          data.address,
+          data.city,
+          data.state,
+          data.postalCode || undefined
+        );
+
+        if (addressResult.isValid) {
+          console.log('✅ Address validated successfully!');
+          console.log('Full standardized address:', addressResult.fullAddress);
+        } else {
+          // Check if it's an address validation error or another type of error
+          const isAddressError = addressResult.error &&
+            (addressResult.error.toLowerCase().includes('not found') ||
+             addressResult.error.toLowerCase().includes('not deliverable') ||
+             addressResult.error.toLowerCase().includes('invalid address'));
+
+          if (isAddressError) {
+            // For address validation errors, show "Please verify this [field]" on each field
+            form.setError('address', {
+              type: 'manual',
+              message: 'Please verify this address'
+            });
+            form.setError('city', {
+              type: 'manual',
+              message: 'Please verify this city'
+            });
+            form.setError('state', {
+              type: 'manual',
+              message: 'Please verify this state'
+            });
+            if (data.postalCode) {
+              form.setError('postalCode', {
+                type: 'manual',
+                message: 'Please verify this postal code'
+              });
+            }
+          } else {
+            // For other errors (API failures, etc.), show in console as a toast alternative
+            console.error('❌ Address validation service error:', addressResult.error);
+            // In a real app, you'd use a toast here. For now, we'll also show a generic error
+            alert(`Address validation service error: ${addressResult.error}`);
+          }
+
+          // Stop submission since address is invalid
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      console.log('✅ All validations passed!');
+
+      // if (type === 'sign-up') {
+      //   const newUser = await signUp(data);
+      //   setUser(newUser);
+      // } else {
+      //   const user = await signIn({
+      //     email: data.email,
+      //     password: data.password,
+      //   });
+      //   router.push('/');
+      // }
+    } catch (error) {
+      console.error(error);
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
+
   }
   return (
     <section className="auth-form">
@@ -73,6 +155,65 @@ const AuthForm = ({type}: {type:string}) => {
         <>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+              {type === 'sign-up' && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <CustomInput
+                      control={form.control}
+                      name="firstName"
+                      label="First Name"
+                      placeholder="Enter your first name"
+                    />
+                    <CustomInput
+                      control={form.control}
+                      name="lastName"
+                      label="Last Name"
+                      placeholder="Enter your last name"
+                    />
+                  </div>
+                  <CustomInput
+                    control={form.control}
+                    name="address"
+                    label="Address"
+                    placeholder="Enter your specific address"
+                  />
+                  <CustomInput
+                    control={form.control}
+                    name="city"
+                    label="City"
+                    placeholder="Enter your city"
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <CustomInput
+                      control={form.control}
+                      name="state"
+                      label="State"
+                      placeholder="ex: CA"
+                    />
+                    <CustomInput
+                      control={form.control}
+                      name="postalCode"
+                      label="Postal Code"
+                      placeholder="ex: 11101"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <CustomInput
+                      control={form.control}
+                      name="dateOfBirth"
+                      label="Date of Birth"
+                      placeholder="mm-dd-yyyy"
+                    />
+                    <CustomInput
+                      control={form.control}
+                      name="ssn"
+                      label="SSN"
+                      placeholder="xxx-xx-xxxx"
+                    />
+                  </div>
+                </>
+              )}
+              
               <CustomInput
                 control={form.control}
                 name="email"

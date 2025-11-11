@@ -1,14 +1,16 @@
 import { FormControl, FormField, FormLabel, FormMessage } from './ui/form'
 import { Input } from './ui/input'
-import { Control, FieldPath } from 'react-hook-form'
-import { z } from 'zod'
+import type { Control, FieldPath } from 'react-hook-form'
+import type { z } from 'zod'
 import { AuthFormSchema } from '@/lib/utils'
 import { useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 
+const schema = AuthFormSchema({type: "sign-up"})
+
 interface CustomInputProps {
-  control: Control<z.infer<typeof AuthFormSchema>>;
-  name: FieldPath<z.infer<typeof AuthFormSchema>>;
+  control: Control<z.infer<typeof schema>>;
+  name: FieldPath<z.infer<typeof schema>>;
   label: string;
   placeholder: string;
 }
@@ -18,6 +20,22 @@ const CustomInput = ({ control, name, label, placeholder }: CustomInputProps) =>
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
+  }
+
+  const formatDateOfBirth = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, '').slice(0, 8)
+    const mm = digitsOnly.slice(0, 2)
+    const dd = digitsOnly.slice(2, 4)
+    const yyyy = digitsOnly.slice(4, 8)
+    return [mm, dd, yyyy].filter(Boolean).join('-')
+  }
+
+  const formatSSN = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, '').slice(0, 9)
+    const a = digitsOnly.slice(0, 3)
+    const b = digitsOnly.slice(3, 5)
+    const c = digitsOnly.slice(5, 9)
+    return [a, b, c].filter(Boolean).join('-')
   }
 
   return (
@@ -30,10 +48,23 @@ const CustomInput = ({ control, name, label, placeholder }: CustomInputProps) =>
           <div className="flex w-full flex-col">
             <FormControl>
               <div className="relative">
-                <Input placeholder={placeholder}
-                  className="input-class pr-10"
+                <Input
+                  placeholder={placeholder}
+                  className="input-class"
                   type={name === 'password' ? (showPassword ? 'text' : 'password') : 'text'}
-                  {...field}
+                  inputMode={name === 'dateOfBirth' || name === 'ssn' ? 'numeric' : undefined}
+                  autoComplete="off"
+                  value={field.value ?? ''}
+                  onChange={(e) => {
+                    const raw = e.target.value
+                    let nextValue = raw
+                    if (name === 'dateOfBirth') {
+                      nextValue = formatDateOfBirth(raw)
+                    } else if (name === 'ssn') {
+                      nextValue = formatSSN(raw)
+                    }
+                    field.onChange(nextValue)
+                  }}
                 />
                 {name === 'password' && (
                   <button
